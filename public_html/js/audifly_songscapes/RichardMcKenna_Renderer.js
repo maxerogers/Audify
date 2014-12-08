@@ -22,6 +22,9 @@ function RichardMcKenna_Renderer(initCanvas) {
     this.canvas = initCanvas;
     this.graphicsContext = this.canvas.getContext("2d");
 
+    this.oldFrequencyData = [];
+    this.oldTimeDomainData = [];
+
     /*
      * This initializes rendering for the loaded MIDI
      * songscape.
@@ -223,8 +226,8 @@ function RichardMcKenna_Renderer(initCanvas) {
         var g = 255.0;
         var x = 0;
 
-        console.log(timeDomainData);
-
+        //console.log(timeDomainData);
+        /*
         // AND NOW RENDER EACH BIN COLUMN
         for (var i = 0; i < binCount; i++) {
             // NOW USE IT TO RENDER SOMETHING
@@ -238,6 +241,50 @@ function RichardMcKenna_Renderer(initCanvas) {
             //g -= gInc;
             if (g < 0)
                 g = 0;
+        }
+        */
+        //New Render Style
+        wInc *= 8;
+        x = wInc;
+        xOffSet = x/2;
+        w = wInc*0.8;
+
+        for (var i = 0; i < binCount/4; i++) {
+          /*
+          this.graphicsContext.fillStyle =
+          "rgba(" + Math.round(g) + ","
+          + Math.round(g) + ",0,255)";
+          */
+          var h = hInc * frequencyData[i] / timeDomainData[i];
+          var h2 = hInc * this.oldFrequencyData[i] / this.oldTimeDomainData[i];
+          //console.log(h);
+
+          this.graphicsContext.fillStyle = "rgba(0,255,0,255)";
+
+
+          //Center circles
+          this.graphicsContext.beginPath();
+          this.graphicsContext.arc(x, this.canvas.height/2, h2, 0, Math.PI*2, true);
+          this.graphicsContext.closePath();
+          this.graphicsContext.fill();
+
+          //Background Squares
+          //this.graphicsContext.rotate(70, 80);
+          this.graphicsContext.fillRect(50, 50, 50, 50);
+
+
+          //this.graphicsContext.fillRect(x, this.canvas.height/2 , w, h2*w);
+          //this.graphicsContext.fillRect(x, this.canvas.height/2 , w, -h2*w);
+
+          //Square Bars
+          this.graphicsContext.rotate(Math.PI*frequencyData[i], Math.PI*timeDomainData[i]);
+          this.graphicsContext.fillRect(x, this.canvas.height/2 + 25 , w, h*w);
+          this.graphicsContext.fillRect(x, this.canvas.height/2 - 25, w, -h*w);
+
+          this.oldFrequencyData[i] = frequencyData[i];
+          this.oldTimeDomainData[i] = timeDomainData[i];
+
+          x += wInc;
         }
     };
 
